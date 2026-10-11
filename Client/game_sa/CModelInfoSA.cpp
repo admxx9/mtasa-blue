@@ -74,7 +74,7 @@ union tIdeFlags
 };
 
 static constexpr uintptr_t vftable_CVehicleModelInfo = 0x85C5C8u;
-static void CBaseModelInfo_SetColModel(CBaseModelInfoSAInterface* self, CColModelSAInterface* colModel, bool applyToPairedModel)
+static void                CBaseModelInfo_SetColModel(CBaseModelInfoSAInterface* self, CColModelSAInterface* colModel, bool applyToPairedModel)
 {
     using Signature = void(__thiscall*)(CBaseModelInfoSAInterface*, CColModelSAInterface*, bool);
     auto function = reinterpret_cast<Signature>(0x4C4BC0);

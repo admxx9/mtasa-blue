@@ -490,7 +490,7 @@ VOID OnGameLaunch()
     // LURION compatibility: Fastman92 extends GTA's streaming/model ID tables before MTA's
     // game layer reads them. Load only the explicitly named limit adjuster from the selected
     // GTA directory; all other ASI plugins remain untouched/unsupported.
-    const fs::path fastmanPath = gtaDirectory / L"$fastman92limitAdjuster.asi";
+    const fs::path  fastmanPath = gtaDirectory / L"$fastman92limitAdjuster.asi";
     std::error_code fastmanEc{};
     if (fs::is_regular_file(fastmanPath, fastmanEc))
     {

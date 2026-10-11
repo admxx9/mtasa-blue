@@ -358,7 +358,7 @@ void CStreamingSA::SetStreamingInfo(uint modelid, unsigned char usStreamID, uint
     // As a result, a memory leak occurs after every call to engineImageLinkDFF.
     // Only DFF models (< MODELINFO_DFF_MAX) have a valid CBaseModelInfoSAInterface with an RwObject.
     // TXD and other higher model IDs don't — their CModelInfoSA::m_pInterface is uninitialized.
-    if (modelid < pGame->GetBaseIDforTXD())
+    if (modelid < g_pCore->GetGame()->GetBaseIDforTXD())
     {
         if (CModelInfo* modelInfo = g_pCore->GetGame()->GetModelInfo(modelid); modelInfo && modelInfo->GetRwObject())
             RemoveModel(modelid);
