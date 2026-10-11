@@ -1684,17 +1684,20 @@ void CheckDataFiles()
     bool         bFoundInGTADir = !gtaAsiFiles.empty() && gtaAsiFiles.size() < MAX_ASI_FILES;
     bool         bFoundInMTADir = !mtaAsiFiles.empty() && mtaAsiFiles.size() < MAX_ASI_FILES;
 
-    if (bFoundInGTADir || bFoundInMTADir)
+    // LURION compatibility: the selected GTA directory is also used by the SA-MP build and
+    // intentionally contains ASI plugins. MTA launches its generated gta_sa.exe from a separate
+    // directory, so these files are not loaded automatically. Keep them in place and only log
+    // their presence. The loader-proxy explicitly loads the Fastman92 limit adjuster we support.
+    if (bFoundInGTADir)
     {
-        if (bFoundInGTADir)
-        {
-            for (size_t i = 0; i < gtaAsiFiles.size() && i < 10; ++i)
-            {
-                WriteDebugEvent(SString("Warning: ASI file detected in GTA dir: %s", *gtaAsiFiles[i]));
-            }
-        }
+        for (size_t i = 0; i < gtaAsiFiles.size() && i < 25; ++i)
+            WriteDebugEvent(SString("LURION: GTA-dir ASI left untouched (not auto-loaded by MTA): %s", *gtaAsiFiles[i]));
+    }
 
-        DisplayErrorMessageBox(_(".asi files are in the installation directory.\n\n"
+    // Still reject ASI files placed inside the MTA installation itself.
+    if (bFoundInMTADir)
+    {
+        DisplayErrorMessageBox(_(".asi files are in the MTA installation directory.\n\n"
                                  "Remove these .asi files if you experience problems."),
                                _E("CL28"), "asi-files");
     }
