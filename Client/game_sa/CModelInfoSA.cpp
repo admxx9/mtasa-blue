@@ -74,8 +74,6 @@ union tIdeFlags
 };
 
 static constexpr uintptr_t vftable_CVehicleModelInfo = 0x85C5C8u;
-static constexpr size_t    RESOURCE_ID_COL = 25000;
-
 static void CBaseModelInfo_SetColModel(CBaseModelInfoSAInterface* self, CColModelSAInterface* colModel, bool applyToPairedModel)
 {
     using Signature = void(__thiscall*)(CBaseModelInfoSAInterface*, CColModelSAInterface*, bool);
@@ -306,7 +304,7 @@ BYTE CModelInfoSA::GetVehicleType() const noexcept
 bool CModelInfoSA::IsVehicle() const
 {
     // NOTE(botder): This is from CModelInfo::IsVehicleModelType
-    if (m_dwModelID >= 20000)
+    if (m_dwModelID >= pGame->GetBaseIDforTXD())
         return false;
 
     if (!IsAllocatedInArchive())
@@ -774,8 +772,11 @@ CBoundingBox* CModelInfoSA::GetBoundingBox()
 
 bool CModelInfoSA::IsValid()
 {
-    if (m_dwModelID >= MODELINFO_DFF_MAX && m_dwModelID < MODELINFO_TXD_MAX)
-        return !pGame->GetPools()->GetTxdPool().IsFreeTextureDictonarySlot(m_dwModelID - MODELINFO_DFF_MAX);
+    const uint32_t baseTxdId = pGame->GetBaseIDforTXD();
+    const uint32_t baseColId = pGame->GetBaseIDforCOL();
+
+    if (m_dwModelID >= baseTxdId && m_dwModelID < baseColId)
+        return !pGame->GetPools()->GetTxdPool().IsFreeTextureDictonarySlot(m_dwModelID - baseTxdId);
 
     if (m_dwModelID >= pGame->GetBaseIDforTXD() && m_dwModelID < pGame->GetCountOfAllFileIDs())
         return true;
@@ -1683,7 +1684,7 @@ void CModelInfoSA::RestoreColModel()
         // there was any object/building, which would've provoked CColStore to request it.
         if (m_pInterface->pColModel && !m_pInterface->pColModel->m_data && m_dwReferences > 1)
         {
-            pGame->GetStreaming()->RemoveModel(RESOURCE_ID_COL + m_pInterface->pColModel->m_sphere.m_collisionSlot);
+            pGame->GetStreaming()->RemoveModel(pGame->GetBaseIDforCOL() + m_pInterface->pColModel->m_sphere.m_collisionSlot);
         }
 
         // Handle paired time models explicitly so MTA tracking stays in sync.
@@ -1706,7 +1707,7 @@ void CModelInfoSA::RestoreColModel()
 
                     if (pairedInterface->pColModel && !pairedInterface->pColModel->m_data && pairedModelSA->m_dwReferences > 1)
                     {
-                        pGame->GetStreaming()->RemoveModel(RESOURCE_ID_COL + pairedInterface->pColModel->m_sphere.m_collisionSlot);
+                        pGame->GetStreaming()->RemoveModel(pGame->GetBaseIDforCOL() + pairedInterface->pColModel->m_sphere.m_collisionSlot);
                     }
                 }
 

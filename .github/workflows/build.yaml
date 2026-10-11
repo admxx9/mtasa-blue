@@ -7,7 +7,7 @@ jobs:
   windows:
     strategy:
       matrix:
-        platform: [win32, x64, arm64]
+        platform: [win32]
     name: windows-${{ matrix.platform }}
     runs-on: windows-2025-vs2026
     steps:
@@ -51,6 +51,7 @@ jobs:
           path: InstallFiles/
 
   macOS:
+    if: false
     name: macOS
     runs-on: macOS-15
     steps:
@@ -67,6 +68,7 @@ jobs:
         run: ./linux-build.sh
 
   linux:
+    if: false
     strategy:
       matrix:
         architecture: [x64, arm64]

@@ -62,6 +62,7 @@ bool IEqual(std::wstring_view lhs, std::wstring_view rhs);
 HMODULE g_exe = nullptr;
 HMODULE g_core = nullptr;
 HMODULE g_netc = nullptr;
+HMODULE g_fastman = nullptr;
 
 BOOL(WINAPI* Win32GetVersionExA)(LPOSVERSIONINFOA) = nullptr;
 
@@ -118,6 +119,12 @@ BOOL OnLibraryDetach()
     {
         FreeLibrary(g_netc);
         g_netc = nullptr;
+    }
+
+    if (g_fastman)
+    {
+        FreeLibrary(g_fastman);
+        g_fastman = nullptr;
     }
 
     return TRUE;
@@ -479,6 +486,24 @@ VOID OnGameLaunch()
     }
 
     CheckService(7 /* CHECK_SERVICE_POST_CREATE */);
+
+    // LURION compatibility: Fastman92 extends GTA's streaming/model ID tables before MTA's
+    // game layer reads them. Load only the explicitly named limit adjuster from the selected
+    // GTA directory; all other ASI plugins remain untouched/unsupported.
+    const fs::path fastmanPath = gtaDirectory / L"$fastman92limitAdjuster.asi";
+    std::error_code fastmanEc{};
+    if (fs::is_regular_file(fastmanPath, fastmanEc))
+    {
+        g_fastman = LoadLibraryExW(fastmanPath.wstring().c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
+        if (g_fastman)
+            AddLaunchLog("LURION: fastman92 limit adjuster loaded from %S", fastmanPath.wstring().c_str());
+        else
+            AddLaunchLog("LURION: fastman92 limit adjuster FAILED to load (error %lu) from %S", GetLastError(), fastmanPath.wstring().c_str());
+    }
+    else
+    {
+        AddLaunchLog("LURION: fastman92 limit adjuster not present; using stock GTA limits");
+    }
 
     // Load and set up core.dll library.
     g_core = LoadLibraryW(corePath.wstring().c_str());

@@ -4027,7 +4027,7 @@ static void __declspec(naked) HOOK_CEventScanner__ScanForEvents_ContactEntity()
 static void LOG_CStreaming__GetNextFileOnCd_NullTxdDef(unsigned int modelId)
 {
     LogEvent(850, "TxdDef pool entry is null", "CStreaming::GetNextFileOnCd",
-             SString("Null TxdDef for streaming model: %u (TXD slot: %u)", modelId, modelId - 20000), 5701);
+             SString("Null TxdDef for streaming model: %u (TXD slot: %u)", modelId, modelId - pGameInterface->GetBaseIDforTXD()), 5701);
 }
 
 #define HOOKPOS_CStreaming__GetNextFileOnCd_NullTxdDef   0x408F6E
@@ -4091,7 +4091,7 @@ static void __declspec(naked) HOOK_CStreaming__GetNextFileOnCd_NullTxdDef()
 static void LOG_CStreaming__ConvertBufferToObject_NullTxdDef(unsigned int modelId)
 {
     LogEvent(851, "TxdDef pool entry is null", "CStreaming::ConvertBufferToObject",
-             SString("Null TxdDef for streaming model: %u (TXD slot: %u)", modelId, modelId - 20000), 5702);
+             SString("Null TxdDef for streaming model: %u (TXD slot: %u)", modelId, modelId - pGameInterface->GetBaseIDforTXD()), 5702);
 }
 
 #define HOOKPOS_CStreaming__ConvertBufferToObject_NullTxdDef   0x40C8CE

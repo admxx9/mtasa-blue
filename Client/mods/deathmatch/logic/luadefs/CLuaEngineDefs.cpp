@@ -768,8 +768,8 @@ std::string CLuaEngineDefs::EngineImageGetFile(CClientIMG* pIMG, std::variant<si
 
 bool CLuaEngineDefs::EngineImageLinkDFF(CClientIMG* pIMG, std::variant<size_t, std::string_view> file, uint uiModelID)
 {
-    if (uiModelID >= 20000)
-        throw std::invalid_argument(SString("Expected modelid in range 0 - 19999, got %d", uiModelID));
+    if (uiModelID >= g_pGame->GetBaseIDforTXD())
+        throw std::invalid_argument(SString("Expected a valid DFF model id below %u, got %u", g_pGame->GetBaseIDforTXD(), uiModelID));
 
     size_t      fileID = ResolveIMGFileID(pIMG, file);
     std::string buffer;
@@ -795,13 +795,13 @@ bool CLuaEngineDefs::EngineImageLinkTXD(CClientIMG* pIMG, std::variant<size_t, s
     if (!g_pCore->GetNetwork()->CheckFile("txd", "", buffer.data(), buffer.size()))
         throw std::invalid_argument("Failed to link file. Make sure the archieve isn't corrupted.");
 
-    return pIMG->LinkModel(20000 + uiTxdID, fileID);
+    return pIMG->LinkModel(g_pGame->GetBaseIDforTXD() + uiTxdID, fileID);
 }
 
 bool CLuaEngineDefs::EngineRestoreDFFImage(uint uiModelID)
 {
-    if (uiModelID >= 20000)
-        throw std::invalid_argument("Expected model ID in range [0-19999] at argument 1");
+    if (uiModelID >= g_pGame->GetBaseIDforTXD())
+        throw std::invalid_argument("Expected a valid DFF model ID at argument 1");
 
     if (CClientIMGManager::IsLinkableModel(uiModelID))
         return m_pImgManager->RestoreModel(uiModelID);
@@ -815,7 +815,7 @@ bool CLuaEngineDefs::EngineRestoreTXDImage(uint uiModelID)
         throw std::invalid_argument("Expected TXD ID in range [0-4999] at argument 1");
 
     if (CClientIMGManager::IsLinkableModel(uiModelID))
-        return m_pImgManager->RestoreModel(20000 + uiModelID);
+        return m_pImgManager->RestoreModel(g_pGame->GetBaseIDforTXD() + uiModelID);
 
     return false;
 }
@@ -2439,8 +2439,8 @@ uint CLuaEngineDefs::EngineGetModelFlags(uint uiModelId)
 {
     CModelInfo* pModelInfo = g_pGame->GetModelInfo(uiModelId);
 
-    if (uiModelId >= 20000 || !pModelInfo)
-        throw std::invalid_argument("Expected a valid model ID in range [0-19999] at argument 1");
+    if (uiModelId >= g_pGame->GetBaseIDforTXD() || !pModelInfo)
+        throw std::invalid_argument("Expected a valid DFF model ID at argument 1");
 
     return pModelInfo->GetFlags();
 }
@@ -2449,8 +2449,8 @@ bool CLuaEngineDefs::EngineGetModelFlag(uint uiModelId, eModelIdeFlag eFlag)
 {
     CModelInfo* pModelInfo = g_pGame->GetModelInfo(uiModelId);
 
-    if (uiModelId >= 20000 || !pModelInfo)
-        throw std::invalid_argument("Expected a valid model ID in range [0-19999] at argument 1");
+    if (uiModelId >= g_pGame->GetBaseIDforTXD() || !pModelInfo)
+        throw std::invalid_argument("Expected a valid DFF model ID at argument 1");
 
     return pModelInfo->GetIdeFlag(eFlag);
 }
@@ -2461,8 +2461,8 @@ bool CLuaEngineDefs::EngineSetModelFlags(uint uiModelID, uint uiFlags, std::opti
 
     CModelInfo* pModelInfo = g_pGame->GetModelInfo(uiModelID);
 
-    if (uiModelID >= 20000 || !pModelInfo)
-        throw std::invalid_argument("Expected a valid model ID in range [0-19999] at argument 1");
+    if (uiModelID >= g_pGame->GetBaseIDforTXD() || !pModelInfo)
+        throw std::invalid_argument("Expected a valid DFF model ID at argument 1");
 
     if (bIdeFlags.value_or(false))
         pModelInfo->SetIdeFlags(uiFlags);
@@ -2478,8 +2478,8 @@ bool CLuaEngineDefs::EngineSetModelFlag(uint uiModelID, eModelIdeFlag eFlag, boo
 
     CModelInfo* pModelInfo = g_pGame->GetModelInfo(uiModelID);
 
-    if (uiModelID >= 20000 || !pModelInfo)
-        throw std::invalid_argument("Expected a valid model ID in range [0-19999] at argument 1");
+    if (uiModelID >= g_pGame->GetBaseIDforTXD() || !pModelInfo)
+        throw std::invalid_argument("Expected a valid DFF model ID at argument 1");
 
     pModelInfo->SetIdeFlag(eFlag, bState);
 
@@ -2490,8 +2490,8 @@ bool CLuaEngineDefs::EngineResetModelFlags(uint uiModelID)
 {
     CModelInfo* pModelInfo = g_pGame->GetModelInfo(uiModelID);
 
-    if (uiModelID >= 20000 || !pModelInfo)
-        throw std::invalid_argument("Expected a valid model ID in range [0-19999] at argument 1");
+    if (uiModelID >= g_pGame->GetBaseIDforTXD() || !pModelInfo)
+        throw std::invalid_argument("Expected a valid DFF model ID at argument 1");
 
     ushort usCurrentFlags = pModelInfo->GetFlags();
     ushort usOriginalFlags = pModelInfo->GetOriginalFlags();
